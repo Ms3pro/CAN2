@@ -1,3 +1,7 @@
+![IMG_20230831_004114_1](https://github.com/Ms3pro/CAN2/assets/133560006/51f11215-58cc-4a6e-8920-ac02111bddf5)
+![IMG_20230830_205134](https://github.com/Ms3pro/CAN2/assets/133560006/bdf51859-0a73-49bc-b1eb-bf6bc82612b4)
+![IMG_20230827_192158](https://github.com/Ms3pro/CAN2/assets/133560006/bcbfeb4f-cfbf-4dee-b15f-3496ad7325c1)
+![IMG_20230827_192208](https://github.com/Ms3pro/CAN2/assets/133560006/6ca40ba6-2a82-4fdb-80f9-b733edd510f9)
 Документация к коду:
 
 Этот код предназначен для платы Arduino Mega 2560 и предоставляет функции для множества компонентов, включая считывание данных с различных пинов, взаимодействие с CAN-шинами и работу с датчиком SHT31.
