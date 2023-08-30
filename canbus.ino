@@ -37,19 +37,25 @@ if (tryInit1<50){goto START_INIT1;} //retry 50 times before quiting init
 }
 }
 //----------------------------------------------------------------------------------------
-//void Send_CAN0_message(byte bcChan, uint16_t theaddress, byte *thedata)
-//{
-//byte sndStat = CAN0.sendMsgBuf(theaddress, 0, 8, thedata);    
-//if(sndStat == CAN_OK)
-   
-//}
-//----------------------------------------------------------------------------------------
-//void Send_CAN1_message(byte bcChan, uint16_t theaddress, uint8_t *thedata)
-//{
-//byte sndStat = CAN1.sendMsgBuf(theaddress, 0, 8, thedata);
-//if(sndStat == CAN_OK)
+// Функция для отправки данных на CAN0
+void Send_CAN0_message(uint16_t theaddress, byte *thedata) {
+    byte sndStat = CAN0.sendMsgBuf(theaddress, 0, 8, thedata); // Отправить 8-байтное сообщение на CAN0
+    if (sndStat == CAN_OK) {
+        // Здесь можно добавить код для обработки успешной отправки, если это необходимо
+    } else {
+        // Здесь можно добавить код для обработки ошибки отправки
+    }
+}
 
-//}
+// Функция для отправки данных на CAN1
+void Send_CAN1_message(uint16_t theaddress, byte *thedata) {
+    byte sndStat = CAN1.sendMsgBuf(theaddress, 0, 8, thedata); // Отправить 8-байтное сообщение на CAN1
+    if (sndStat == CAN_OK) {
+        // Здесь можно добавить код для обработки успешной отправки, если это необходимо
+    } else {
+        // Здесь можно добавить код для обработки ошибки отправки
+    }
+}
 //---------------------------------------------------------------------------------------------
 void receive_CAN0_message()
 {

@@ -6,16 +6,17 @@
 #include <Adafruit_ST7735.h>
 #include <mcp_can.h>
 #include <TaskScheduler.h>
-#include "display.h"
-#include "canbus.h"
+#include "RealDash.h"
 #include "SHT31Helper.h"
+#include "canbus.h"
+#include "display.h"
 
 #if !defined(__AVR_ATmega2560__)
 #error "This code is intended for an Arduino Mega 2560 only!"
 #endif
 
 #if DISP1_ACTIVE && defined DISP1_USE_ST7735_SPI
-extern Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST);
+ Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST);
 #endif
 
 MCP_CAN CAN0(CAN0_CS);
@@ -35,6 +36,15 @@ int analogPins[TOTAL_ANALOG_PINS] = {0};
 
 int digitalPinsBuffer[TOTAL_DIGITAL_PINS] = {0};
 int analogPinsBuffer[TOTAL_ANALOG_PINS] = {0};
+
+void initialiseRealDash() {
+  // Здесь добавьте код инициализации для RealDash, если это необходимо.
+  // Например, настройка пинов или инициализация специфических параметров.
+}
+
+void updateRealDashData() {
+  // Здесь добавьте код для обновления или отправки данных в RealDash.
+}
 
 bool checkDigitalPinsChanged() {
   for (int i = 22; i <= TOTAL_DIGITAL_PINS; i++) {
@@ -77,9 +87,14 @@ void saveStateToEEPROM() {
 void saveAnalogStatesToEEPROM() {
   for (int i = 0; i < TOTAL_ANALOG_PINS; i++) {
     int value = analogPins[i];
-   // EEPROM.write(28 + i * 2, value & 0xFF);
-   // EEPROM.write(28 + i * 2 + 1, (value >> 8) & 0xFF);
+    // EEPROM.write(28 + i * 2, value & 0xFF);
+    // EEPROM.write(28 + i * 2 + 1, (value >> 8) & 0xFF);
   }
+}
+
+void RealDashUpdateTask() {
+  // Здесь вызывайте функцию или функции, которые обновляют данные для RealDash.
+  updateRealDashData();
 }
 
 void setup() {
@@ -94,6 +109,9 @@ void setup() {
   if (!initSHT31()) {
     // Обработка ошибки инициализации SHT31
   }
+
+  // Инициализация для RealDash:
+  initialiseRealDash();
 
   const int SERIAL_SPEED = 115200;
   Serial.begin(SERIAL_SPEED);
@@ -114,6 +132,7 @@ void setup() {
 
 void loop() {
   ts.execute();
+ 
 }
 
 void ReadDigitalStatuses() {
@@ -166,11 +185,12 @@ void SHT31Task() {
 }
 
 Task t1(500, TASK_FOREVER, &driveDisplayTask, &ts, true);
-Task t2(50, TASK_FOREVER, &CAN0Task, &ts, true);
-Task t3(50, TASK_FOREVER, &CAN1Task, &ts, true);
+Task t2(100, TASK_FOREVER, &CAN0Task, &ts, true);
+Task t3(100, TASK_FOREVER, &CAN1Task, &ts, true);
 Task t4(500, TASK_FOREVER, &ReadDigitalStatuses, &ts, true);
-Task t5(500, TASK_FOREVER, &ReadAnalogStatuses, &ts, true);
+Task t5(100, TASK_FOREVER, &ReadAnalogStatuses, &ts, true);
 Task t6(500, TASK_FOREVER, &SHT31Task, &ts, true);
+Task t7(100, TASK_FOREVER, &RealDashUpdateTask, &ts, true);
 
 
 //≪*************************************************************************************************************************************************************************************≫//

@@ -17,10 +17,10 @@ void CAN0_INT_routine();
 void CAN1_INT_routine();
 void initialiseCAN0();
 void initialiseCAN1();
-//void Send_CAN0_message(byte bcChan, uint16_t theaddress, byte *thedata);
-//void Send_CAN1_message(byte bcChan, uint16_t theaddress, byte *thedata);
-//void receive_CAN0_message();
-//void receive_CAN1_message();
+void Send_CAN0_message(uint16_t theaddress, byte *thedata);
+void Send_CAN1_message(uint16_t theaddress, byte *thedata);
+void receive_CAN0_message();
+void receive_CAN1_message();
 
 long unsigned int rxId;
 unsigned char len = 0;
