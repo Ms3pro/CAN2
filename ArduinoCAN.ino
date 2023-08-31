@@ -115,10 +115,7 @@ void RealDashUpdateTask() {
 }
 
 void setup() {
-
-   
-
-
+ 
   if (CAN0_ACTIVE) {
     initialiseCAN0();
   }
