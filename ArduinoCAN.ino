@@ -92,7 +92,7 @@ void updateAnalogBufferAndSave() {
   for (int i = 0; i < TOTAL_ANALOG_PINS; i++) {
     analogPinsBuffer[i] = analogPins[i];
   }
-  saveAnalogStatesToEEPROM();
+  //saveAnalogStatesToEEPROM();
 }
 
 void saveStateToEEPROM() {
