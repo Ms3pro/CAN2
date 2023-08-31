@@ -43,8 +43,6 @@ int analogPinsBuffer[TOTAL_ANALOG_PINS] = {0};
 
 byte sht31Operational = 0;  // 0 означает, что датчик не работает; 1 означает, что работает.
 byte sht31StateChanged = 0;  // 0 означает, что состояние не изменилось; 1 означает, что изменилось.
-byte CAN0Operational = 0;  // 0 - CAN0 не работает; 1 - CAN0 работает
-byte CAN1Operational = 0;  // 0 - CAN1 не работает; 1 - CAN1 работает
 
 void sendAnalogDataToCAN0() {
     // Отправка аналоговых данных на CAN0
