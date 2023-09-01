@@ -1,6 +1,3 @@
-//≪*************************************************************************************************************************************************************************************≫//
-//≪***************************************************************[<<< MEGASQUIRT REAL BROADCAST CAN REALDASH >>>]**********************************************************************≫//
-//≪*************************************************************************************************************************************************************************************≫//
 #include <EEPROM.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_ST7735.h>
@@ -8,8 +5,8 @@
 #include <TaskScheduler.h>
 #include "RealDash.h"
 #include "SHT31Helper.h"
-#include "canbus.h"
 #include "display.h"
+#include "CANHandler.h"
 
 #define TFT_LED  8  // Пин для управления подсветкой дисплея
 
@@ -28,10 +25,7 @@
  Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST);
 #endif
 
-
-MCP_CAN CAN0(CAN0_CS);
-MCP_CAN CAN1(CAN1_CS);
-
+CANHandler can;
 Scheduler ts;
 
 float prevTemp = 0.0;
@@ -49,9 +43,11 @@ int analogPinsBuffer[TOTAL_ANALOG_PINS] = {0};
 
 byte sht31Operational = 0;  // 0 означает, что датчик не работает; 1 означает, что работает.
 byte sht31StateChanged = 0;  // 0 означает, что состояние не изменилось; 1 означает, что изменилось.
-byte CAN0Operational = 0;  // 0 - CAN0 не работает; 1 - CAN0 работает
-byte CAN1Operational = 0;  // 0 - CAN1 не работает; 1 - CAN1 работает
 
+void sendAnalogDataToCAN0() {
+    // Отправка аналоговых данных на CAN0
+    // Например, считывание сенсоров и отправка данных на шину CAN0
+}
 
 void initialiseRealDash() {
   // Здесь добавьте код инициализации для RealDash, если это необходимо.
@@ -116,12 +112,8 @@ void RealDashUpdateTask() {
 
 void setup() {
  
-  if (CAN0_ACTIVE) {
-    initialiseCAN0();
-  }
-  if (CAN1_ACTIVE) {
-    initialiseCAN1();
-  }
+    can.initialiseCAN0();
+  
   if (!initSHT31()) {
     // Обработка ошибки инициализации SHT31
   }
@@ -155,7 +147,6 @@ void setup() {
   digitalWrite(EGT6_LED, LOW);
 
   pinMode(CAN0_INT, INPUT);
-  pinMode(CAN1_INT, INPUT);
 
   for (int i = A0; i < A0 + TOTAL_ANALOG_PINS; i++) {
     pinMode(i, INPUT);
@@ -167,7 +158,8 @@ void setup() {
 }
 
 void loop() {
-  
+  can.CAN0_INT_routine();
+  can.sendAnalogData();
   ts.execute();
 }
  void driveDisplayTask() {
@@ -189,28 +181,7 @@ void ReadAnalogStatuses() {
   }
   if (checkAnalogPinsChanged()) {
     updateAnalogBufferAndSave();
-  }
-}
-
-void CAN0Task() {
-  if (CAN0_ACTIVE) {
-    if (!digitalRead(CAN0_INT)) {
-      CAN0_INT_routine();
-      CAN0Operational = 1;
-    } else {
-      CAN0Operational = 0;
-    }
-  }
-}
-
-void CAN1Task() {
-  if (CAN1_ACTIVE) {
-    if (!digitalRead(CAN1_INT)) {
-      CAN1_INT_routine();
-      CAN1Operational = 1;
-    } else {
-      CAN1Operational = 0;
-    }
+   
   }
 }
 
@@ -245,15 +216,8 @@ void SHT31Task() {
 }
 
 Task t1(500, TASK_FOREVER, &driveDisplayTask, &ts, true);
-Task t2(100, TASK_FOREVER, &CAN0Task, &ts, true);
-Task t3(100, TASK_FOREVER, &CAN1Task, &ts, true);
-Task t4(500, TASK_FOREVER, &ReadDigitalStatuses, &ts, true);
-Task t5(100, TASK_FOREVER, &ReadAnalogStatuses, &ts, true);
-Task t6(500, TASK_FOREVER, &SHT31Task, &ts, true);
-Task t7(100, TASK_FOREVER, &RealDashUpdateTask, &ts, true);
-
-
-//≪*************************************************************************************************************************************************************************************≫//
-//≪*************************************************************************************************************************************************************************************≫//
-//≪*************************************************************************************************************************************************************************************≫//
-//≪*************************************************************************************************************************************************************************************≫//
+Task t2(100, TASK_FOREVER, &sendAnalogDataToCAN0, &ts, true);  
+Task t3(500, TASK_FOREVER, &ReadDigitalStatuses, &ts, true);
+Task t4(100, TASK_FOREVER, &ReadAnalogStatuses, &ts, true);
+Task t5(500, TASK_FOREVER, &SHT31Task, &ts, true);
+Task t6(100, TASK_FOREVER, &RealDashUpdateTask, &ts, true);
